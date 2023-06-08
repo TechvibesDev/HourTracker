@@ -4,6 +4,7 @@ import { Pressable, useColorScheme } from 'react-native';
 
 import Colors from '../../constants/Colors';
 import { Text, View } from '../../components/Themed';
+import { auth } from '../../constants/firebase';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -27,8 +28,8 @@ export default function TabLayout() {
         name="index"
         options={{
           headerTitle: () => <View style={{ backgroundColor: '#3B7A57' }}>
-            <Text style={{ fontSize: 20, fontWeight: '800',color:'white' }}>Welcome</Text>
-            <Text style={{ fontSize: 14, fontWeight: '400',color:'white' }}>Igbashio Julius I.</Text>
+            <Text style={{ fontSize: 20, fontWeight: '800', color: 'white' }}>Welcome</Text>
+            <Text style={{ fontSize: 14, fontWeight: '400', color: 'white' }}>{auth.currentUser?.displayName}</Text>
           </View>,
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
@@ -39,7 +40,7 @@ export default function TabLayout() {
                     name="plus-circle"
                     size={25}
                     color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1,color:'white' }}
+                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1, color: 'white' }}
                   />
                 )}
               </Pressable>

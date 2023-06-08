@@ -2,9 +2,14 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { auth } from '../constants/firebase';
+import { TrackProvider } from '../context/trackContext/trackContext';
+import { trackInitialState, trackReducer } from '../context/trackContext/track.reducer';
+import { LocationProvider } from '../context/locationContext/locationContext';
+import { locationInitialState, locationReducer } from '../context/locationContext/location.reducer';
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -12,7 +17,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(auth)',
+  initialRouteName: auth.currentUser ? "(tabs)" : '(auth)',
 };
 
 export default function RootLayout() {
@@ -40,16 +45,33 @@ function RootLayoutNav() {
 
   return (
     <>
+    <TrackProvider initialState={trackInitialState} reducer={trackReducer}>
+    <LocationProvider
+        initialState={locationInitialState}
+        reducer={locationReducer}
+      >
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ 
-            presentation: 'modal',
-            title:'Create Trip' 
+        <ActionSheetProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{
+              title: 'Create Trip',
+              animationTypeForReplace: 'pop',
+              gestureEnabled: true,
+              gestureDirection: 'vertical'
             }} />
-        </Stack>
+            <Stack.Screen name="tracker" options={{
+              title: 'Trip Tracker',
+              animationTypeForReplace: 'pop',
+              gestureEnabled: true,
+              gestureDirection: 'vertical'
+            }} />
+          </Stack>
+        </ActionSheetProvider>
       </ThemeProvider>
+      </LocationProvider>
+      </TrackProvider>
     </>
   );
 }

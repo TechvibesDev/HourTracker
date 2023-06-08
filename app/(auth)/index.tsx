@@ -7,6 +7,8 @@ import Svg, { Path, SvgProps } from 'react-native-svg';
 import { LinearGradient } from "expo-linear-gradient";
 import { Button, Dialog, MD2Colors, TextInput } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../constants/firebase";
 function SvgComponent1(props: SvgProps) {
     return (
         <Svg height={200} width={Layout.window.width} viewBox={`0 0 1440 320`} {...props}>
@@ -30,7 +32,19 @@ export default function LoginScreen() {
         if (!username || !password) {
             Alert.alert("Please enter username and password");
         } else {
-            router.replace('../(tabs)/');
+            setLoading(true);
+            try {
+                signInWithEmailAndPassword(auth, username, password).then(async (res) => {
+                    router.replace('../(tabs)/');
+                    setLoading(false);
+                }).catch(error => {
+                    Alert.alert('Invalid username or password');
+                    setLoading(false);
+                });
+            } catch (error) {
+                Alert.alert('Unknown error occurred');
+                setLoading(false);
+            }
         }
     };
     return (
@@ -46,7 +60,7 @@ export default function LoginScreen() {
 
                 </View>
             </LinearGradient>
-            <View style={{ top: 0, bottom: 0, left: 0, right: 0, zIndex: 1, position: 'absolute', flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
+            <View style={{ top: 0, bottom: 0, left: 0, right: 0, zIndex: 0, position: 'absolute', flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
                 <View style={{ flexDirection: 'column', justifyContent: 'flex-start', width: Layout.window.width, paddingHorizontal: 20, backgroundColor: 'transparent' }}>
                     <Text style={styles.title}>Login</Text>
                     <TextInput onChangeText={(val: string) => setUsername(val)} value={username} mode={'outlined'} style={{ marginBottom: 10 }} contentStyle={{ backgroundColor: 'transparent' }} placeholder={'Enter username'} activeOutlineColor={'#ccc'} outlineColor={'#ccc'} label="Username" />
@@ -71,7 +85,7 @@ export default function LoginScreen() {
                 },
             }}>
                 <Dialog.Content style={{ backgroundColor: 'transparent', borderWidth: 0, padding: 0, margin: 0, alignContent: 'center', width: 55, height: 55 }}>
-                    <ActivityIndicator style={{ margin: 0, marginTop: -5 }} animating={true} size={'large'} color={MD2Colors.green800} />
+                    <ActivityIndicator style={{ margin: 0 }} animating={true} size={'large'} color={MD2Colors.green800} />
                 </Dialog.Content>
             </Dialog>
             <StatusBar style={'light'} />

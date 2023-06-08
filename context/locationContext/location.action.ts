@@ -1,0 +1,6 @@
+export const ADD_CURRENT_LOCATION = "ADD_CURRENT_LOCATION";
+export const ADD_LOCATION = "ADD_LOCATION";
+export const START_RECORDING = "START_RECORDING";
+export const STOP_RECORDING = "STOP_RECORDING";
+export const CHANGE_NAME = "CHANGE_NAME";
+export const RESET = "RESET";

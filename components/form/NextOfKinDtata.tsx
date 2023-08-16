@@ -19,24 +19,26 @@ type IFormData = {
     address: string;
 }
 type Props = {
-    state: UserProps
+    state: UserProps,
+    onChange: (data: { nextOfKin: IFormData }) => void;
 }
 export default function NextOfKinForm(props: Props) {
+    const { state, onChange } = props;
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<IFormData>();
     const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const phonePattern = /^(080|091|090|070|081)+[0-9]{8}$/;
     React.useEffect(() => {
-        setValue('address', props.state?.nextOfKin?.address ?? '');
-        setValue('email', props.state?.nextOfKin?.email ?? '');
-        setValue('firstName', props.state?.nextOfKin?.firstName ?? '');
-        setValue('lastName', props.state?.nextOfKin?.lastName ?? '');
-        setValue('middlename', props.state?.nextOfKin?.middlename ?? '');
-        setValue('gender', props.state?.nextOfKin?.gender ?? '');
-        setValue('relationship', props.state?.nextOfKin?.relationship ?? '');
-        setValue('phoneNumber', props.state?.nextOfKin?.phoneNumber ?? '');
+        setValue('address', state?.nextOfKin?.address ?? '');
+        setValue('email', state?.nextOfKin?.email ?? '');
+        setValue('firstName', state?.nextOfKin?.firstName ?? '');
+        setValue('lastName', state?.nextOfKin?.lastName ?? '');
+        setValue('middlename', state?.nextOfKin?.middlename ?? '');
+        setValue('gender', state?.nextOfKin?.gender ?? '');
+        setValue('relationship', state?.nextOfKin?.relationship ?? '');
+        setValue('phoneNumber', state?.nextOfKin?.phoneNumber ?? '');
     }, [])
     const onSubmit = async (data: IFormData) => {
-        onAddUserData.next({ nextOfKin: data, password: props.state?.password })
+        onChange({ nextOfKin: data })
         StepperForm$.next(3);
         CanSubmit.next(false);
     }

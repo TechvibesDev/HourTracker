@@ -20,20 +20,18 @@ export default function RegisterScreen() {
     const [data, setData] = React.useState<UserProps>(initialState);
     React.useEffect(() => {
         StepperForm$.subscribe(setStepper);
-    }, []);
-    React.useEffect(() => {
-        CanSubmit.subscribe({
-            next: ((isSubmit: boolean) => {
-                if (isSubmit) {
-                    onRegister();
-                }
-            }),
-        })
+        setData(Object.assign(data, initialState));
         return () => {
-            onAddUserData.next(initialState);
             StepperForm$.next(1);
+            setData(Object.assign(data, initialState));
         };
-    }, [])
+    }, []);
+    const onSubmit = (fd: any) => {
+        setData(Object.assign(data, fd));
+        setTimeout(() => {
+            onRegister();
+        }, 10);
+    }
     const onRegister = async () => {
         setLoading(true);
         try {
@@ -47,8 +45,8 @@ export default function RegisterScreen() {
                 const userRef = collection(db, "users");
                 await setDoc(doc(userRef, data?.email as string), data);
                 if (userRef && userRef.id) {
+                    setData(initialState);
                     Alert.alert('Success!', 'Registration successful');
-                    onAddUserData.next(initialState);
                     StepperForm$.next(1);
                     setLoading(false);
                     router.replace('/');
@@ -84,14 +82,17 @@ export default function RegisterScreen() {
             })
         })
     }
+    const onChange = (formData: any) => {
+        setData(Object.assign(data, formData));
+    }
     return (
         <React.Fragment>
             <View style={styles.container}>
                 <Text style={{ fontSize: 25 }}>User Signup Form</Text>
-                <ScrollView style={{ flex: 1 }}>
-                    {stepper == 1 && <BioDataForm state={data as UserProps} />}
-                    {stepper == 2 && <NextOfKinForm state={data as UserProps} />}
-                    {stepper == 3 && <SetUpPasswordForm />}
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+                    {stepper == 1 && <BioDataForm onChange={onChange} state={data as UserProps} />}
+                    {stepper == 2 && <NextOfKinForm onChange={onChange} state={data as UserProps} />}
+                    {stepper == 3 && <SetUpPasswordForm onChange={onSubmit} />}
                 </ScrollView>
                 <Dialog dismissable={false} visible={loading} style={{ width: 55, height: 55, marginHorizontal: (Layout.window.width - 55) / 2, justifyContent: 'center', alignItems: 'center', padding: 0, alignContent: 'center' }} theme={{
                     colors: {

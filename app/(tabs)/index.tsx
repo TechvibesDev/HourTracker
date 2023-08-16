@@ -30,6 +30,7 @@ export default function TabOneScreen() {
       cancelButtonIndex,
       destructiveButtonIndex
     }, (selectedIndex: any) => {
+
       switch (selectedIndex) {
         case 0: startTrips(x.uuid, x);
           break;
@@ -41,6 +42,47 @@ export default function TabOneScreen() {
           break;
         case destructiveButtonIndex:
           deletTrip(x.uuid);
+          break;
+        case cancelButtonIndex:
+          console.log("Cancelled")
+      }
+    });
+  }
+  const onPressEndStatus = (x: TripsProps) => {
+    const options = ["Delete", 'Cancel'];
+    const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 1;
+    showActionSheetWithOptions({
+      options,
+      cancelButtonIndex,
+      destructiveButtonIndex
+    }, (selectedIndex: any) => {
+
+      switch (selectedIndex) {
+        case destructiveButtonIndex:
+          deletTrip(x.uuid);
+          break;
+        case cancelButtonIndex:
+          console.log("Cancelled")
+      }
+    });
+  }
+  const onPressStartStatus = (x: TripsProps) => {
+    const options = ['Check trip progress', 'End Trip', 'Suspend Trip', 'Cancel'];
+    const cancelButtonIndex = 3;
+    showActionSheetWithOptions({
+      options,
+      cancelButtonIndex
+    }, (selectedIndex: any) => {
+
+      switch (selectedIndex) {
+        case 0: startTrips(x.uuid, x, false);
+          break;
+        case 1:
+          endTrips(x.uuid);
+          break;
+        case 2:
+          suspendTrips(x.uuid);
           break;
         case cancelButtonIndex:
           console.log("Cancelled")
@@ -133,7 +175,11 @@ export default function TabOneScreen() {
       ]
     );
   }
-  const startTrips = (uuid: string, trip: TripsProps) => {
+  const startTrips = (uuid: string, trip: TripsProps, showMsg = true) => {
+    if (!showMsg) {
+      router.push({ pathname: '/tracker', params: { trip: `${trip.from} to ${trip.to}`, uuid: trip.uuid } });
+      return;
+    }
     Alert.alert(
       'Conirm',
       'Are you sure you want to start this trip?',
@@ -159,8 +205,8 @@ export default function TabOneScreen() {
                   }
                   return x;
                 });
-                Update(auth.currentUser?.email as string, newData, "Trip started");
-                router.push({ pathname: '/tracker', params: trip });
+                Update(auth.currentUser?.email as string, newData, "Trip started", showMsg);
+                router.push({ pathname: '/tracker', params: { trip: `${trip.from} to ${trip.to}`, uuid: trip.uuid } });
               }
             }
             catch (err: any) {
@@ -216,12 +262,14 @@ export default function TabOneScreen() {
       setLoading(false);
     }
   }
-  const Update = async (id: string, data: Array<any>, title: string) => {
+  const Update = async (id: string, data: Array<any>, title: string, showMsg = true) => {
     setLoading(true);
     const tripRef = collection(db, "trips");
     await setDoc(doc(tripRef, id as string), { trip: data });
     if (tripRef && tripRef.id) {
-      Alert.alert('Success!', title);
+      if (showMsg) {
+        Alert.alert('Success!', title);
+      }
       keepUpdate.next(tripRef.id);
       setLoading(false);
     } else {
@@ -238,7 +286,7 @@ export default function TabOneScreen() {
         </View>
         {
           list.map((x: TripsProps, i: number) => (
-            <TouchableOpacity onPress={() => onPress(x)} key={i} style={{ marginBottom: 20 }}>
+            <TouchableOpacity onPress={() => +x.status === 3 ? onPressEndStatus(x) : (+x.status === 1 ? onPressStartStatus(x) : onPress(x))} key={i} style={{ marginBottom: 20 }}>
               <Shadow style={{ width: Layout.window.width - 40 }} startColor={'#E6F4EC'} endColor={'#F2EEEF'} distance={5} offset={[1, 1]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 5, backgroundColor: '#F2EEEF' }}>
                   <View style={{ backgroundColor: 'transparent' }}>

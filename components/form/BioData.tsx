@@ -21,26 +21,28 @@ type IFormData = {
     address: string;
 }
 type Props = {
-    state: UserProps
+    state: UserProps;
+    onChange: (data: IFormData) => void;
 }
 export default function BioDataForm(props: Props) {
     // const data = useUserData();
+    const { state, onChange } = props;
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<IFormData>();
     const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const phonePattern = /^(080|091|090|070|081)+[0-9]{8}$/;
     React.useEffect(() => {
-        setValue('address', props.state?.address ?? '');
-        setValue('uuid', props.state?.uuid ?? Crypto.randomUUID())
-        setValue('email', props.state?.email ?? '');
-        setValue('firstName', props.state?.firstName ?? '');
-        setValue('lastName', props.state?.lastName ?? '');
-        setValue('middlename', props.state?.middlename ?? '');
-        setValue('gender', props.state?.gender ?? '');
-        setValue('maritalsStatus', props.state?.maritalsStatus ?? '');
-        setValue('phoneNumber', props.state?.phoneNumber ?? '');
+        setValue('address', state?.address ?? '');
+        setValue('uuid', Crypto.randomUUID())
+        setValue('email', state?.email ?? '');
+        setValue('firstName', state?.firstName ?? '');
+        setValue('lastName', state?.lastName ?? '');
+        setValue('middlename', state?.middlename ?? '');
+        setValue('gender', state?.gender ?? '');
+        setValue('maritalsStatus', state?.maritalsStatus ?? '');
+        setValue('phoneNumber', state?.phoneNumber ?? '');
     }, [])
     const onSubmit = async (data: IFormData) => {
-        onAddUserData.next({ ...data, ...{ nextOfKin: props.state?.nextOfKin, password: props.state?.password }})
+        onChange(data)
         StepperForm$.next(2);
         CanSubmit.next(false);
     }

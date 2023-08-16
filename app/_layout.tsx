@@ -10,6 +10,7 @@ import { TrackProvider } from '../context/trackContext/trackContext';
 import { trackInitialState, trackReducer } from '../context/trackContext/track.reducer';
 import { LocationProvider } from '../context/locationContext/locationContext';
 import { locationInitialState, locationReducer } from '../context/locationContext/location.reducer';
+import 'react-native-gesture-handler';
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -45,32 +46,32 @@ function RootLayoutNav() {
 
   return (
     <>
-    <TrackProvider initialState={trackInitialState} reducer={trackReducer}>
-    <LocationProvider
-        initialState={locationInitialState}
-        reducer={locationReducer}
-      >
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <ActionSheetProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{
-              title: 'Create Trip',
-              animationTypeForReplace: 'pop',
-              gestureEnabled: true,
-              gestureDirection: 'vertical'
-            }} />
-            <Stack.Screen name="tracker" options={{
-              title: 'Trip Tracker',
-              animationTypeForReplace: 'pop',
-              gestureEnabled: true,
-              gestureDirection: 'vertical'
-            }} />
-          </Stack>
-        </ActionSheetProvider>
-      </ThemeProvider>
-      </LocationProvider>
+      <TrackProvider initialState={trackInitialState} reducer={trackReducer}>
+        <LocationProvider
+          initialState={locationInitialState}
+          reducer={locationReducer}
+        >
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <ActionSheetProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{
+                  title: 'Create Trip',
+                  animationTypeForReplace: 'pop',
+                  gestureEnabled: true,
+                  gestureDirection: 'vertical'
+                }} />
+                <Stack.Screen name="tracker" options={{
+                  title: 'Trip Tracker',
+                  animationTypeForReplace: 'pop',
+                  gestureEnabled: true,
+                  gestureDirection: 'vertical'
+                }} />
+              </Stack>
+            </ActionSheetProvider>
+          </ThemeProvider>
+        </LocationProvider>
       </TrackProvider>
     </>
   );

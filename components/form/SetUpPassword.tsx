@@ -11,11 +11,14 @@ type IFormData = {
     npassword: string;
     cpassword: string;
 }
-export default function SetUpPasswordForm() {
+type Props = {
+    onChange: (data: any) => void;
+}
+export default function SetUpPasswordForm(props: Props) {
+    const { onChange } = props;
     const { control, handleSubmit, watch, formState: { errors } } = useForm<IFormData>();
     const onSubmit = async (data: IFormData) => {
-        onAddUserData.next({ password: data.npassword });
-        CanSubmit.next(true);
+        onChange({ password: data.npassword });
     }
     return (
         <React.Fragment>

@@ -1,7 +1,7 @@
-import { useNavigation, useSearchParams } from "expo-router";
+import { useNavigation, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { useLocationStateValue } from "../context/locationContext/locationContext";
-import { ADD_CURRENT_LOCATION, ADD_LOCATION } from "../context/locationContext/location.action";
+import { ADD_CURRENT_LOCATION, ADD_LOCATION, CHANGE_NAME, STOP_RECORDING } from "../context/locationContext/location.action";
 import useLocation from "../hooks/useLocation";
 import MyMap from "../components/Map";
 import { Text, View } from "../components/Themed";
@@ -10,7 +10,8 @@ import { StyleSheet } from "react-native";
 
 export default function TrackerScreen() {
     const navigation = useNavigation();
-    const params = useSearchParams();
+    const params = useLocalSearchParams();
+    const { trip } = params;
     const [isFocused, setFocused] = React.useState(navigation.isFocused());
     const [state, dispatch] = useLocationStateValue();
 
@@ -23,10 +24,6 @@ export default function TrackerScreen() {
         },
         [state?.recording]
     );
-    React.useEffect(() => {
-        console.log(state);
-        console.log(navigation.isFocused());
-    }, []);
     const [err] = useLocation(callback, isFocused || state.recording);
 
     React.useEffect(() => {
@@ -40,16 +37,18 @@ export default function TrackerScreen() {
         //   blurSubscription ? blurSubscription.remove() : null;
         //   focusSubscription ? focusSubscription.remove() : null;
         // };
-        console.log(err);
     }, []);
-
+    React.useEffect(() => { 
+        dispatch({ type: CHANGE_NAME, name: trip });
+        dispatch({ type: STOP_RECORDING });
+    }, [])
     return (
         <React.Fragment>
             <MyMap />
             {err ? <Text>Please enable location services</Text> : null}
-            <View style={styles.form}>
+            {/* <View style={styles.form}>
                 <TrackForm />
-            </View>
+            </View> */}
         </React.Fragment>
     )
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
-import MapView, { Polyline, Circle } from "react-native-maps";
+import MapView, { Polyline, Circle, PROVIDER_GOOGLE } from "react-native-maps";
 import { useLocationStateValue } from "../context/locationContext/locationContext";
 
 export default function MyMap() {
@@ -18,7 +18,7 @@ export default function MyMap() {
         longitudeDelta: 0.01,
     };
     return (
-        <MapView style={styles.map} initialRegion={mapRegion} region={mapRegion}>
+        <MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={mapRegion} region={mapRegion}>
             <Circle
                 center={currentLocation.coords}
                 radius={30}
@@ -36,6 +36,6 @@ export const MapOptions = {
 
 const styles = StyleSheet.create({
     map: {
-        height: 300,
+        height: "100%",
     },
 });
